@@ -44,7 +44,7 @@
   .rec-name{font-size:14px;font-weight:700;color:#1a1a1a;}
   .rec-bio{font-size:11.5px;color:#8a8f96;line-height:1.5;margin:2px 0 6px;}
   .rec-review{font-size:13px;color:#33373c;line-height:1.62;}
-  .rec-review.empty{color:#b0b4b9;font-style:italic;}
+  .rec-review.empty{color:#b8bcc1;font-size:12px;}
   #chart-container svg path.rootArea{cursor:pointer;}
   #chart-container svg path.rootArea:hover{filter:brightness(.94);}
   #chart-container svg path.cell-clicked{stroke:#111;stroke-width:2.5px;filter:brightness(.92);}
@@ -146,7 +146,7 @@ function showDetail(b){
   const recs = (b.recommenders||[]).map(r=>{
     const rv = r.review && r.review.trim()
       ? `<div class="rec-review">“${esc(r.review)}”</div>`
-      : `<div class="rec-review empty">추천사 없음 (도서명만 추천)</div>`;
+      : `<div class="rec-review empty">추천사 없음</div>`;
     return `<div class="rec">
       <div class="rec-name filter-trig" data-type="rec" data-val="${esc(r.name)}" title="이 추천인이 고른 책만 보기">${esc(r.name)}</div>
       <div class="rec-bio">${esc(r.bio)}</div>
