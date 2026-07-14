@@ -244,12 +244,15 @@ function renderView(mode){
   if (v.positions) opts.positions = v.positions;
   if (v.colorFunc) opts.colorFunc = v.colorFunc;
   const newSvg = new VoronoiTreemap().render(v.data, opts);
-  // viewBox로 전환 + 인라인 max-width(1200px) 해제 → 컨테이너 폭에 맞춰 꽉 차게 스케일 (모바일 대응)
-  newSvg.setAttribute('viewBox', '0 0 ' + (opts.width||1200) + ' ' + (opts.height||900));
-  newSvg.removeAttribute('width'); newSvg.removeAttribute('height');
-  newSvg.style.maxWidth = 'none';
   document.getElementById('chart-container').replaceChildren(newSvg);
   svg = newSvg;
+  // viewBox로 전환 → 컨테이너 폭에 맞춰 꽉 차게 스케일 (모바일). 캡션이 height(900) 아래(y=910)라
+  // 실제 콘텐츠 bbox 높이로 viewBox를 잡아 캡션이 잘리지 않게 한다. 인라인 max-width(1200)도 해제.
+  let vbH = (opts.height||900) + 34;
+  try { const bb = newSvg.getBBox(); if (bb.height) vbH = Math.ceil(bb.y + bb.height) + 6; } catch(e) {}
+  newSvg.setAttribute('viewBox', '0 0 ' + (opts.width||1200) + ' ' + vbH);
+  newSvg.removeAttribute('width'); newSvg.removeAttribute('height');
+  newSvg.style.maxWidth = 'none';
   bookCells  = [...svg.querySelectorAll('path.rootArea, path.textArea')].filter(p => { const r = rowOf(p); return r && r.title; });
   bookCells.forEach(p => { p._ofill = p.style.fill; });
   bookLabels = [...svg.querySelectorAll('text.text-item')].filter(t => { const r = rowOf(t); return r && r.title; });  // 보이는 제목(depth3)
