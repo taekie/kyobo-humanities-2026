@@ -233,10 +233,11 @@ const catColorFunc = (o, nd, def) => { const b = nd && nd.category && nd.categor
 const VIEWS = {
   // 분류: 대분류·중분류·제목 라벨 모두 표시
   cat: { data: DATA,    levels: ['metaLabel','label','text'], positions: POS_CAT, caption: '대분류 › 중분류 › 도서 · 91종 (크기 = 추천받은 횟수)' },
-  // 추천인·출판사: 그룹(depth1) + 제목(depth3), 셀 색은 책의 대분류(분류 뷰 색) 사용
-  rec: { data: dataRec, levels: ['recommender','text'], positions: posD1(POS_REC), hideLeaf: true, colorFunc: catColorFunc,
+  // 추천인·출판사: 그룹>그룹>책 3단계로 depth1(메타)은 숨기고 depth2에 그룹 라벨·depth3에 제목(중복 없음).
+  // 셀 색은 책의 대분류(분류 뷰 색) 사용.
+  rec: { data: dataRec, levels: ['recommender','recommender','text'], positions: posD1(POS_REC), showMetaLabel: false, colorFunc: catColorFunc,
          caption: '추천인 › 도서 · 평가위원 61인 · 셀 색 = 도서 분야(대분류)' },
-  pub: { data: DATA,    levels: ['publisher','text'],   positions: posD1(POS_PUB), hideLeaf: true, colorFunc: catColorFunc,
+  pub: { data: DATA,    levels: ['publisher','publisher','text'],     positions: posD1(POS_PUB), showMetaLabel: false, colorFunc: catColorFunc,
          caption: '출판사 › 도서 · 63개 출판사 · 셀 색 = 도서 분야(대분류)' },
 };
 
@@ -259,6 +260,7 @@ function onSvgClick(e){
 function renderView(mode){
   const v = VIEWS[mode];
   const opts = { ...BASE_OPTS, levels: v.levels, caption: v.caption };
+  if ('showMetaLabel' in v) opts.showMetaLabel = v.showMetaLabel;
   if (v.positions) opts.positions = v.positions;
   if (v.colorFunc) opts.colorFunc = v.colorFunc;
   const newSvg = new VoronoiTreemap().render(v.data, opts);
@@ -275,9 +277,9 @@ function renderView(mode){
   bookCells.forEach(p => { p._ofill = p.style.fill; });
   bookLabels = [...svg.querySelectorAll('text.text-item')].filter(t => { const r = rowOf(t); return r && r.title; });  // 보이는 제목(depth3)
   svg.querySelectorAll('text.percent-label').forEach(t => { t.style.display = 'none'; });   // 퍼센트는 노이즈 → 항상 숨김
-  // 출판사·추천인은 제목이 depth2(label-item)·depth3(text-item)에 중복 → 중복인 depth2만 숨김(제목은 depth3로 1회 표시).
-  // 분류는 label-item이 중분류라 그대로 둔다.
-  if (v.hideLeaf) svg.querySelectorAll('text.label-item').forEach(t => { t.style.display = 'none'; });
+  // 그룹>그룹>책 구조: showMetaLabel:false로도 안 숨겨지는 depth1(region) 그룹 라벨을 JS로 숨김
+  // → 그룹은 depth2(label-item)로 1회, 제목은 depth3(text-item)로 1회 (중복 없음).
+  if (v.showMetaLabel === false) svg.querySelectorAll('text.region').forEach(t => { t.style.display = 'none'; });
   curFilter = null;
   svg.addEventListener('click', onSvgClick);
   document.querySelectorAll('.fb-tab').forEach(t => t.classList.toggle('active', t.dataset.dim===mode));
