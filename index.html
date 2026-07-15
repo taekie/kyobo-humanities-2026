@@ -41,8 +41,8 @@
   #chart-container svg{width:100%;height:auto;}
   /* 상세 패널 */
   .panel{flex:0 0 360px;width:360px;background:#fff;border:1px solid #e8eaed;border-radius:16px;
-         padding:20px;align-self:flex-start;
-         box-shadow:0 4px 18px rgba(0,0,0,.05);}
+         padding:20px;position:sticky;top:20px;max-height:calc(100vh - 40px);overflow-y:auto;
+         box-shadow:0 4px 18px rgba(0,0,0,.05);}   /* 데스크톱: 뷰포트 높이 제한 + 내부 스크롤 */
   .panel .panel-empty{color:#9aa0a6;font-size:14px;text-align:center;padding:60px 10px;line-height:1.6;}
   .bk-head{display:flex;gap:14px;}
   .bk-head img{width:96px;height:auto;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.18);flex:0 0 96px;}
@@ -86,7 +86,7 @@
   .fb-reset:hover{color:#111;border-color:#c9ccd0;}
   @media(max-width:900px){
     .layout{flex-direction:column;}
-    .panel{position:static;width:100%;flex-basis:auto;max-height:none;}
+    .panel{position:static;width:100%;flex-basis:auto;max-height:none;overflow:visible;}  /* 모바일: 스크롤 없이 전체 표시 */
     .wrap{padding:14px 8px 28px;}          /* 좌우 여백 최소화 → 버블이 폭을 가득 */
     .chartcol{width:100%;}                   /* 컬럼 레이아웃에서 폭 100% 강제 */
     #chart-container{max-width:none;}       /* 폭 제한 해제 */
